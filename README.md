@@ -225,13 +225,13 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📞 Support
 
-- 📧 Email: support@finviraj.com
+- 📧 Email: sureshnani86@gmail.com
 - 🐛 Issues: [GitHub Issues](https://github.com/sureshpatta86/finviraj-trading-journal/issues)
 - 💬 Discussions: [GitHub Discussions](https://github.com/sureshpatta86/finviraj-trading-journal/discussions)
 
 ---
 
-**Built with ❤️ by the Finviraj Team**
+**Built with ❤️ for Finviraj Traders**
 
 *Making trading journal management simple, beautiful, and powerful.*
 
