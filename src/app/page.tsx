@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Icons } from '@/components/ui/icons'
+import { ThemeToggle } from '@/components/ui/theme-toggle'
 import { TrendingUp, PlusCircle, BarChart3, DollarSign, LogOut } from 'lucide-react'
 import { signOut } from 'next-auth/react'
 
@@ -62,6 +63,7 @@ export default function HomePage() {
           </div>
           
           <div className="ml-auto flex items-center space-x-4">
+            <ThemeToggle />
             <div className="flex items-center space-x-2">
               <span className="text-sm">Welcome, {session?.user?.name || 'User'}</span>
             </div>

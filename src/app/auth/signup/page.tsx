@@ -12,6 +12,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Icons } from '@/components/ui/icons'
+import { ThemeToggle } from '@/components/ui/theme-toggle'
 import { TrendingUp, Eye, EyeOff, ArrowRight, Sparkles, CheckCircle2, User, Mail, Lock } from 'lucide-react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
@@ -112,11 +113,16 @@ export default function SignUpPage() {
 
   if (success) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 relative overflow-hidden">
+      <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-background via-primary/20 to-background relative overflow-hidden">
+        {/* Theme Toggle - Fixed position */}
+        <div className="fixed top-4 right-4 z-50">
+          <ThemeToggle />
+        </div>
+        
         <motion.div
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="text-center text-white space-y-6"
+          className="text-center text-foreground space-y-6"
         >
           <motion.div
             initial={{ scale: 0 }}
@@ -127,7 +133,7 @@ export default function SignUpPage() {
             <CheckCircle2 className="h-12 w-12 text-white" />
           </motion.div>
           <h1 className="text-4xl font-bold">Welcome to Trading Journal!</h1>
-          <p className="text-xl text-purple-200">Account created successfully. Signing you in...</p>
+          <p className="text-xl text-muted-foreground">Account created successfully. Signing you in...</p>
           <Icons.spinner className="mx-auto h-8 w-8 animate-spin" />
         </motion.div>
       </div>
@@ -135,12 +141,17 @@ export default function SignUpPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 relative overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-background via-primary/20 to-background relative overflow-hidden">
+      {/* Theme Toggle - Fixed position */}
+      <div className="fixed top-4 right-4 z-50">
+        <ThemeToggle />
+      </div>
+
       {/* Animated background elements */}
       <div className="absolute inset-0">
-        <div className="absolute top-1/4 left-1/4 w-72 h-72 bg-purple-500/20 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-indigo-500/10 rounded-full blur-3xl animate-pulse delay-500"></div>
+        <div className="absolute top-1/4 left-1/4 w-72 h-72 bg-primary/20 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-primary/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-primary/10 rounded-full blur-3xl animate-pulse delay-500"></div>
       </div>
 
       <motion.div
@@ -149,19 +160,19 @@ export default function SignUpPage() {
         transition={{ duration: 0.6, ease: "easeOut" }}
         className="w-full max-w-lg relative z-10"
       >
-        <Card className="bg-white/10 backdrop-blur-xl border border-white/20 shadow-2xl">
+        <Card className="bg-card/80 backdrop-blur-xl border border-border shadow-2xl">
           <CardHeader className="text-center space-y-6 pb-8">
             <motion.div
               initial={{ scale: 0, rotate: -180 }}
               animate={{ scale: 1, rotate: 0 }}
               transition={{ delay: 0.2, type: "spring", stiffness: 200, damping: 15 }}
-              className="mx-auto w-20 h-20 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full flex items-center justify-center shadow-xl relative"
+              className="mx-auto w-20 h-20 bg-gradient-to-r from-primary to-primary/80 rounded-full flex items-center justify-center shadow-xl relative"
             >
-              <TrendingUp className="h-10 w-10 text-white" />
+              <TrendingUp className="h-10 w-10 text-primary-foreground" />
               <motion.div
                 animate={{ rotate: 360 }}
                 transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-                className="absolute inset-0 rounded-full border-2 border-dashed border-white/30"
+                className="absolute inset-0 rounded-full border-2 border-dashed border-border"
               />
             </motion.div>
             <motion.div
@@ -169,13 +180,13 @@ export default function SignUpPage() {
               animate={{ opacity: 1 }}
               transition={{ delay: 0.4, duration: 0.6 }}
             >
-              <CardTitle className="text-4xl font-bold bg-gradient-to-r from-white to-purple-200 bg-clip-text text-transparent">
+              <CardTitle className="text-4xl font-bold bg-gradient-to-r from-foreground to-primary bg-clip-text text-transparent">
                 Join the Empire
               </CardTitle>
-              <CardDescription className="text-xl mt-3 text-purple-200/80 flex items-center justify-center gap-2">
-                <Sparkles className="h-5 w-5 text-purple-300" />
+              <CardDescription className="text-xl mt-3 text-muted-foreground flex items-center justify-center gap-2">
+                <Sparkles className="h-5 w-5 text-primary" />
                 Start your trading journey today
-                <Sparkles className="h-5 w-5 text-purple-300" />
+                <Sparkles className="h-5 w-5 text-primary" />
               </CardDescription>
             </motion.div>
           </CardHeader>
@@ -187,8 +198,8 @@ export default function SignUpPage() {
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.3 }}
               >
-                <Alert variant="destructive" className="border-red-400/50 bg-red-500/10 backdrop-blur">
-                  <AlertDescription className="text-red-200">{error}</AlertDescription>
+                <Alert variant="destructive" className="border-destructive/50 bg-destructive/10 backdrop-blur">
+                  <AlertDescription className="text-destructive-foreground">{error}</AlertDescription>
                 </Alert>
               </motion.div>
             )}
@@ -203,7 +214,7 @@ export default function SignUpPage() {
             >
               <div className="space-y-5">
                 <div className="space-y-3">
-                  <Label htmlFor="name" className="text-lg font-semibold text-white/90 flex items-center gap-2">
+                  <Label htmlFor="name" className="text-lg font-semibold text-foreground flex items-center gap-2">
                     <User className="h-5 w-5" />
                     Full Name
                   </Label>
@@ -213,15 +224,15 @@ export default function SignUpPage() {
                     placeholder="Enter your full name"
                     {...register('name')}
                     disabled={isLoading}
-                    className="h-14 border-2 border-white/20 bg-white/5 backdrop-blur text-white placeholder:text-white/50 focus:border-purple-400 focus:ring-purple-400/50 transition-all duration-300 text-lg"
+                    className="h-14 border-2 border-border bg-background/50 backdrop-blur text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-primary/50 transition-all duration-300 text-lg"
                   />
                   {errors.name && (
-                    <p className="text-red-300 text-sm">{errors.name.message}</p>
+                    <p className="text-destructive text-sm">{errors.name.message}</p>
                   )}
                 </div>
 
                 <div className="space-y-3">
-                  <Label htmlFor="email" className="text-lg font-semibold text-white/90 flex items-center gap-2">
+                  <Label htmlFor="email" className="text-lg font-semibold text-foreground flex items-center gap-2">
                     <Mail className="h-5 w-5" />
                     Email Address
                   </Label>
@@ -231,15 +242,15 @@ export default function SignUpPage() {
                     placeholder="Enter your email"
                     {...register('email')}
                     disabled={isLoading}
-                    className="h-14 border-2 border-white/20 bg-white/5 backdrop-blur text-white placeholder:text-white/50 focus:border-purple-400 focus:ring-purple-400/50 transition-all duration-300 text-lg"
+                    className="h-14 border-2 border-border bg-background/50 backdrop-blur text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-primary/50 transition-all duration-300 text-lg"
                   />
                   {errors.email && (
-                    <p className="text-red-300 text-sm">{errors.email.message}</p>
+                    <p className="text-destructive text-sm">{errors.email.message}</p>
                   )}
                 </div>
 
                 <div className="space-y-3">
-                  <Label htmlFor="password" className="text-lg font-semibold text-white/90 flex items-center gap-2">
+                  <Label htmlFor="password" className="text-lg font-semibold text-foreground flex items-center gap-2">
                     <Lock className="h-5 w-5" />
                     Password
                   </Label>
@@ -250,12 +261,12 @@ export default function SignUpPage() {
                       placeholder="Create a strong password"
                       {...register('password')}
                       disabled={isLoading}
-                      className="h-14 border-2 border-white/20 bg-white/5 backdrop-blur text-white placeholder:text-white/50 focus:border-purple-400 focus:ring-purple-400/50 transition-all duration-300 text-lg pr-14"
+                      className="h-14 border-2 border-border bg-background/50 backdrop-blur text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-primary/50 transition-all duration-300 text-lg pr-14"
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute inset-y-0 right-0 pr-4 flex items-center text-white/60 hover:text-white/90 transition-colors"
+                      className="absolute inset-y-0 right-0 pr-4 flex items-center text-muted-foreground hover:text-foreground transition-colors"
                     >
                       {showPassword ? (
                         <EyeOff className="h-6 w-6" />
@@ -268,7 +279,7 @@ export default function SignUpPage() {
                   {password && (
                     <div className="space-y-2">
                       <div className="flex justify-between text-sm">
-                        <span className="text-white/70">Password strength:</span>
+                        <span className="text-muted-foreground">Password strength:</span>
                         <span className={`font-semibold ${
                           passwordStrength.label === 'Strong' ? 'text-green-400' : 
                           passwordStrength.label === 'Good' ? 'text-blue-400' :
@@ -282,7 +293,7 @@ export default function SignUpPage() {
                           <div
                             key={i}
                             className={`h-2 flex-1 rounded-full transition-colors ${
-                              i <= passwordStrength.strength ? passwordStrength.color : 'bg-white/20'
+                              i <= passwordStrength.strength ? passwordStrength.color : 'bg-muted/50'
                             }`}
                           />
                         ))}
@@ -291,12 +302,12 @@ export default function SignUpPage() {
                   )}
                   
                   {errors.password && (
-                    <p className="text-red-300 text-sm">{errors.password.message}</p>
+                    <p className="text-destructive text-sm">{errors.password.message}</p>
                   )}
                 </div>
 
                 <div className="space-y-3">
-                  <Label htmlFor="confirmPassword" className="text-lg font-semibold text-white/90 flex items-center gap-2">
+                  <Label htmlFor="confirmPassword" className="text-lg font-semibold text-foreground flex items-center gap-2">
                     <Lock className="h-5 w-5" />
                     Confirm Password
                   </Label>
@@ -307,12 +318,12 @@ export default function SignUpPage() {
                       placeholder="Confirm your password"
                       {...register('confirmPassword')}
                       disabled={isLoading}
-                      className="h-14 border-2 border-white/20 bg-white/5 backdrop-blur text-white placeholder:text-white/50 focus:border-purple-400 focus:ring-purple-400/50 transition-all duration-300 text-lg pr-14"
+                      className="h-14 border-2 border-border bg-background/50 backdrop-blur text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-primary/50 transition-all duration-300 text-lg pr-14"
                     />
                     <button
                       type="button"
                       onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                      className="absolute inset-y-0 right-0 pr-4 flex items-center text-white/60 hover:text-white/90 transition-colors"
+                      className="absolute inset-y-0 right-0 pr-4 flex items-center text-muted-foreground hover:text-foreground transition-colors"
                     >
                       {showConfirmPassword ? (
                         <EyeOff className="h-6 w-6" />
@@ -322,7 +333,7 @@ export default function SignUpPage() {
                     </button>
                   </div>
                   {errors.confirmPassword && (
-                    <p className="text-red-300 text-sm">{errors.confirmPassword.message}</p>
+                    <p className="text-destructive text-sm">{errors.confirmPassword.message}</p>
                   )}
                 </div>
               </div>
@@ -333,7 +344,7 @@ export default function SignUpPage() {
               >
                 <Button
                   type="submit"
-                  className="w-full h-14 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-bold text-xl shadow-2xl hover:shadow-purple-500/25 transition-all duration-300 border-0 group"
+                  className="w-full h-14 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-primary-foreground font-bold text-xl shadow-2xl hover:shadow-primary/25 transition-all duration-300 border-0 group"
                   disabled={isLoading}
                 >
                   {isLoading ? (
@@ -357,11 +368,11 @@ export default function SignUpPage() {
               animate={{ opacity: 1 }}
               transition={{ delay: 0.5, duration: 0.6 }}
             >
-              <p className="text-lg text-white/70">
+              <p className="text-lg text-muted-foreground">
                 Already have an account?{' '}
                 <Link 
                   href="/auth/signin" 
-                  className="font-bold text-purple-300 hover:text-purple-200 transition-colors underline decoration-purple-300/50 hover:decoration-purple-200 underline-offset-4"
+                  className="font-bold text-primary hover:text-primary/80 transition-colors underline decoration-primary/50 hover:decoration-primary underline-offset-4"
                 >
                   Sign in here
                 </Link>
