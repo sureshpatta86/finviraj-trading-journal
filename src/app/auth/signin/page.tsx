@@ -120,7 +120,7 @@ export default function SignInPage() {
                 transition={{ duration: 0.3 }}
               >
                 <Alert variant="destructive" className="border-destructive/50 bg-destructive/10 backdrop-blur">
-                  <AlertDescription className="text-destructive-foreground">{error}</AlertDescription>
+                  <AlertDescription className="text-destructive">{error}</AlertDescription>
                 </Alert>
               </motion.div>
             )}
