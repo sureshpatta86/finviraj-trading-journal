@@ -251,7 +251,7 @@ export default function AboutPage() {
                 <Button size="lg" variant="secondary" asChild>
                   <Link href="/auth/signup">Start Free Trial</Link>
                 </Button>
-                <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-blue-600" asChild>
+                <Button size="lg" variant="outline" className="bg-transparent border-white text-white hover:bg-white hover:text-blue-600" asChild>
                   <Link href="/feedback">Contact Us</Link>
                 </Button>
               </div>
