@@ -1,18 +1,18 @@
-import { mysqlTable, varchar, text, decimal, datetime, int, boolean } from 'drizzle-orm/mysql-core'
+import { pgTable, varchar, text, decimal, timestamp, integer, boolean } from 'drizzle-orm/pg-core'
 import { createId } from '@paralleldrive/cuid2'
 
-export const users = mysqlTable('users', {
+export const users = pgTable('users', {
   id: varchar('id', { length: 128 }).primaryKey().$defaultFn(() => createId()),
   name: varchar('name', { length: 255 }),
   email: varchar('email', { length: 255 }).notNull().unique(),
   password: varchar('password', { length: 255 }),
-  emailVerified: datetime('emailVerified'),
+  emailVerified: timestamp('emailVerified'),
   image: text('image'),
-  createdAt: datetime('createdAt').notNull().$defaultFn(() => new Date()),
-  updatedAt: datetime('updatedAt').notNull().$defaultFn(() => new Date()),
+  createdAt: timestamp('createdAt').notNull().defaultNow(),
+  updatedAt: timestamp('updatedAt').notNull().defaultNow(),
 })
 
-export const accounts = mysqlTable('accounts', {
+export const accounts = pgTable('accounts', {
   id: varchar('id', { length: 128 }).primaryKey().$defaultFn(() => createId()),
   userId: varchar('userId', { length: 128 }).notNull(),
   type: varchar('type', { length: 255 }).notNull(),
@@ -20,27 +20,27 @@ export const accounts = mysqlTable('accounts', {
   providerAccountId: varchar('providerAccountId', { length: 255 }).notNull(),
   refresh_token: text('refresh_token'),
   access_token: text('access_token'),
-  expires_at: int('expires_at'),
+  expires_at: integer('expires_at'),
   token_type: varchar('token_type', { length: 255 }),
   scope: varchar('scope', { length: 255 }),
   id_token: text('id_token'),
   session_state: varchar('session_state', { length: 255 }),
 })
 
-export const sessions = mysqlTable('sessions', {
+export const sessions = pgTable('sessions', {
   id: varchar('id', { length: 128 }).primaryKey().$defaultFn(() => createId()),
   sessionToken: varchar('sessionToken', { length: 255 }).notNull().unique(),
   userId: varchar('userId', { length: 128 }).notNull(),
-  expires: datetime('expires').notNull(),
+  expires: timestamp('expires').notNull(),
 })
 
-export const verificationTokens = mysqlTable('verificationTokens', {
+export const verificationTokens = pgTable('verificationTokens', {
   identifier: varchar('identifier', { length: 255 }).notNull(),
   token: varchar('token', { length: 255 }).notNull().unique(),
-  expires: datetime('expires').notNull(),
+  expires: timestamp('expires').notNull(),
 })
 
-export const trades = mysqlTable('trades', {
+export const trades = pgTable('trades', {
   id: varchar('id', { length: 128 }).primaryKey().$defaultFn(() => createId()),
   userId: varchar('userId', { length: 128 }).notNull(),
   symbol: varchar('symbol', { length: 20 }).notNull(),
@@ -49,14 +49,14 @@ export const trades = mysqlTable('trades', {
   price: decimal('price', { precision: 10, scale: 2 }).notNull(),
   totalValue: decimal('totalValue', { precision: 12, scale: 2 }).notNull(),
   fees: decimal('fees', { precision: 8, scale: 2 }).default('0'),
-  executedAt: datetime('executedAt').notNull(),
+  executedAt: timestamp('executedAt').notNull(),
   strategy: varchar('strategy', { length: 100 }),
   notes: text('notes'),
-  createdAt: datetime('createdAt').notNull().$defaultFn(() => new Date()),
-  updatedAt: datetime('updatedAt').notNull().$defaultFn(() => new Date()),
+  createdAt: timestamp('createdAt').notNull().defaultNow(),
+  updatedAt: timestamp('updatedAt').notNull().defaultNow(),
 })
 
-export const portfolios = mysqlTable('portfolios', {
+export const portfolios = pgTable('portfolios', {
   id: varchar('id', { length: 128 }).primaryKey().$defaultFn(() => createId()),
   userId: varchar('userId', { length: 128 }).notNull(),
   name: varchar('name', { length: 100 }).notNull(),
@@ -64,11 +64,11 @@ export const portfolios = mysqlTable('portfolios', {
   initialBalance: decimal('initialBalance', { precision: 12, scale: 2 }).notNull(),
   currentBalance: decimal('currentBalance', { precision: 12, scale: 2 }).notNull(),
   isActive: boolean('isActive').default(true),
-  createdAt: datetime('createdAt').notNull().$defaultFn(() => new Date()),
-  updatedAt: datetime('updatedAt').notNull().$defaultFn(() => new Date()),
+  createdAt: timestamp('createdAt').notNull().defaultNow(),
+  updatedAt: timestamp('updatedAt').notNull().defaultNow(),
 })
 
-export const positions = mysqlTable('positions', {
+export const positions = pgTable('positions', {
   id: varchar('id', { length: 128 }).primaryKey().$defaultFn(() => createId()),
   userId: varchar('userId', { length: 128 }).notNull(),
   portfolioId: varchar('portfolioId', { length: 128 }).notNull(),
@@ -79,6 +79,6 @@ export const positions = mysqlTable('positions', {
   unrealizedPnl: decimal('unrealizedPnl', { precision: 10, scale: 2 }),
   realizedPnl: decimal('realizedPnl', { precision: 10, scale: 2 }).default('0'),
   isOpen: boolean('isOpen').default(true),
-  createdAt: datetime('createdAt').notNull().$defaultFn(() => new Date()),
-  updatedAt: datetime('updatedAt').notNull().$defaultFn(() => new Date()),
+  createdAt: timestamp('createdAt').notNull().defaultNow(),
+  updatedAt: timestamp('updatedAt').notNull().defaultNow(),
 })
