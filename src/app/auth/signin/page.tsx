@@ -57,8 +57,14 @@ export default function SignInPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-background via-primary/20 to-background relative overflow-hidden">
-      {/* Theme Toggle - Fixed position */}
-      <div className="fixed top-4 right-4 z-50">
+      {/* Navigation Bar */}
+      <div className="fixed top-4 left-4 right-4 z-50 flex justify-between items-center">
+        <Button variant="outline" asChild className="bg-background/80 backdrop-blur-sm">
+          <Link href="/" className="flex items-center gap-2">
+            <TrendingUp className="h-4 w-4" />
+            Home
+          </Link>
+        </Button>
         <ThemeToggle />
       </div>
 

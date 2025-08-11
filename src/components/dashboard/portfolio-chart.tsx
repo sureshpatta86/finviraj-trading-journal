@@ -52,7 +52,7 @@ const chartOptions = {
       beginAtZero: false,
       ticks: {
         callback: function(value: any) {
-          return '$' + value.toLocaleString()
+          return '₹' + value.toLocaleString('en-IN')
         },
       },
     },

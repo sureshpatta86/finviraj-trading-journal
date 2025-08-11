@@ -114,8 +114,14 @@ export default function SignUpPage() {
   if (success) {
     return (
       <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-background via-primary/20 to-background relative overflow-hidden">
-        {/* Theme Toggle - Fixed position */}
-        <div className="fixed top-4 right-4 z-50">
+        {/* Navigation Bar */}
+        <div className="fixed top-4 left-4 right-4 z-50 flex justify-between items-center">
+          <Button variant="outline" asChild className="bg-background/80 backdrop-blur-sm">
+            <Link href="/" className="flex items-center gap-2">
+              <TrendingUp className="h-4 w-4" />
+              Home
+            </Link>
+          </Button>
           <ThemeToggle />
         </div>
         
@@ -141,13 +147,17 @@ export default function SignUpPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-background via-primary/20 to-background relative overflow-hidden">
-      {/* Theme Toggle - Fixed position */}
-      <div className="fixed top-4 right-4 z-50">
-        <ThemeToggle />
-      </div>
-
-      {/* Animated background elements */}
+      <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-background via-primary/20 to-background relative overflow-hidden">
+        {/* Navigation Bar */}
+        <div className="fixed top-4 left-4 right-4 z-50 flex justify-between items-center">
+          <Button variant="outline" asChild className="bg-background/80 backdrop-blur-sm">
+            <Link href="/" className="flex items-center gap-2">
+              <TrendingUp className="h-4 w-4" />
+              Home
+            </Link>
+          </Button>
+          <ThemeToggle />
+        </div>      {/* Animated background elements */}
       <div className="absolute inset-0">
         <div className="absolute top-1/4 left-1/4 w-72 h-72 bg-primary/20 rounded-full blur-3xl animate-pulse"></div>
         <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-primary/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
