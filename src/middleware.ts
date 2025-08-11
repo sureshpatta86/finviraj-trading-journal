@@ -6,7 +6,20 @@ export default withAuth(
   },
   {
     callbacks: {
-      authorized: ({ token }) => !!token
+      authorized: ({ token, req }) => {
+        // Allow access to public pages without authentication
+        const { pathname } = req.nextUrl
+        
+        // Public routes that don't require authentication
+        const publicRoutes = ['/', '/about', '/feedback']
+        
+        if (publicRoutes.includes(pathname)) {
+          return true
+        }
+        
+        // For all other routes, require authentication
+        return !!token
+      }
     },
   }
 )

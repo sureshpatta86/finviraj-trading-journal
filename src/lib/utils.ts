@@ -5,11 +5,15 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-export function formatCurrency(amount: number, currency = "USD"): string {
-  return new Intl.NumberFormat("en-US", {
+export function formatCurrency(amount: number, currency = "INR"): string {
+  return new Intl.NumberFormat("en-IN", {
     style: "currency",
     currency,
   }).format(amount)
+}
+
+export function formatCurrencySimple(amount: number): string {
+  return `₹${amount.toLocaleString('en-IN')}`
 }
 
 export function formatPercentage(value: number, decimals = 2): string {
