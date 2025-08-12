@@ -1,0 +1,21 @@
+export default function SettingsPage() {
+  return (
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+          Settings
+        </h1>
+        <p className="text-gray-600 dark:text-gray-400 mt-2">
+          Configure your application settings and preferences
+        </p>
+      </div>
+      
+      <div className="bg-white dark:bg-gray-800 rounded-lg p-8 text-center">
+        <h2 className="text-xl font-semibold mb-4">Settings Coming Soon</h2>
+        <p className="text-gray-600 dark:text-gray-400">
+          This feature is under development. You&apos;ll be able to manage settings here.
+        </p>
+      </div>
+    </div>
+  )
+}
