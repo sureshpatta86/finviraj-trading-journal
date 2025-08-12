@@ -1,8 +1,19 @@
 import { withAuth } from "next-auth/middleware"
+import { NextResponse } from "next/server"
 
 export default withAuth(
   function middleware(req) {
-    // Add any additional middleware logic here
+    const { pathname } = req.nextUrl
+    const token = req.nextauth.token
+
+    // If no token and trying to access dashboard, redirect to signin
+    if (pathname.startsWith('/dashboard') && !token) {
+      const signInUrl = new URL('/auth/signin', req.url)
+      return NextResponse.redirect(signInUrl)
+    }
+
+    // Allow the request to continue
+    return NextResponse.next()
   },
   {
     callbacks: {
@@ -15,6 +26,16 @@ export default withAuth(
         
         if (publicRoutes.includes(pathname)) {
           return true
+        }
+        
+        // Auth routes - allow access if not authenticated
+        if (pathname.startsWith('/auth/')) {
+          return true
+        }
+        
+        // Dashboard routes require authentication
+        if (pathname.startsWith('/dashboard')) {
+          return !!token
         }
         
         // For all other routes, require authentication

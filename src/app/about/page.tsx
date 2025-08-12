@@ -1,11 +1,10 @@
 'use client'
 
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card } from '@/components/ui/card'
 import { ThemeToggle } from '@/components/ui/theme-toggle'
 import { 
   TrendingUp, 
-  ArrowLeft,
   Target,
   Users,
   Award,
@@ -34,9 +33,6 @@ export default function AboutPage() {
             <Button variant="ghost" asChild>
               <Link href="/">Home</Link>
             </Button>
-            <Button variant="ghost" asChild>
-              <Link href="/feedback">Feedback</Link>
-            </Button>
             <ThemeToggle />
             <Button variant="outline" asChild>
               <Link href="/auth/signin">Sign In</Link>
@@ -51,17 +47,11 @@ export default function AboutPage() {
           {/* Header */}
           <div className="text-center mb-16">
             <h1 className="text-5xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 bg-clip-text text-transparent mb-6">
-              About FinViraj
+              About FinViraj Trading Journal
             </h1>
             <p className="text-xl text-gray-600 dark:text-gray-300 mb-8">
               Empowering traders worldwide with intelligent journaling and analytics
             </p>
-            <Button variant="outline" asChild>
-              <Link href="/" className="flex items-center gap-2">
-                <ArrowLeft className="h-4 w-4" />
-                Back to Home
-              </Link>
-            </Button>
           </div>
 
           {/* Mission Statement */}
@@ -83,14 +73,14 @@ export default function AboutPage() {
               <p className="text-gray-600 dark:text-gray-300 leading-relaxed mb-6">
                 FinViraj Trading Journal was born from the frustration of countless traders who struggled to maintain 
                 consistent profitability despite having solid strategies. We realized that the missing 
-                piece wasn't just better analysis tools, but a comprehensive system that could track, 
+                piece wasn&apos;t just better analysis tools, but a comprehensive system that could track, 
                 analyze, and guide traders toward disciplined, rule-based trading.
               </p>
               
               <p className="text-gray-600 dark:text-gray-300 leading-relaxed mb-6">
                 Founded by a team of experienced traders, data scientists, and software engineers, 
                 FinViraj Trading Journal combines decades of trading expertise with cutting-edge technology to create 
-                a platform that doesn't just track your trades—it helps you become a better trader.
+                a platform that doesn&apos;t just track your trades—it helps you become a better trader.
               </p>
 
               <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
@@ -134,7 +124,7 @@ export default function AboutPage() {
                 </div>
                 <h3 className="text-xl font-semibold mb-3">Innovation</h3>
                 <p className="text-gray-600 dark:text-gray-300">
-                  We continuously push the boundaries of what's possible with 
+                  We continuously push the boundaries of what&apos;s possible with 
                   AI-driven insights and advanced analytics.
                 </p>
               </Card>
@@ -146,7 +136,7 @@ export default function AboutPage() {
                 <h3 className="text-xl font-semibold mb-3">Community</h3>
                 <p className="text-gray-600 dark:text-gray-300">
                   Trading can be lonely. We foster a community of traders 
-                  supporting each other's growth and success.
+                  supporting each other&apos;s growth and success.
                 </p>
               </Card>
 
