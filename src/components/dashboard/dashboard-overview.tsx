@@ -11,6 +11,7 @@ import {
   Calendar,
   BarChart3
 } from 'lucide-react'
+import { AddTradeModal } from './add-trade-modal'
 
 export function DashboardOverview() {
   const stats = [
@@ -88,10 +89,7 @@ export function DashboardOverview() {
             <Calendar className="h-4 w-4" />
             View Calendar
           </Button>
-          <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 flex items-center gap-2">
-            <Plus className="h-4 w-4" />
-            Add Trade
-          </Button>
+          <AddTradeModal />
         </div>
       </div>
 
@@ -187,19 +185,23 @@ export function DashboardOverview() {
 
       {/* Quick Actions */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card className="hover:shadow-lg transition-shadow cursor-pointer">
-          <CardContent className="p-6 text-center">
-            <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/20 rounded-lg flex items-center justify-center mx-auto mb-4">
-              <Plus className="h-6 w-6 text-blue-600 dark:text-blue-400" />
-            </div>
-            <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
-              Add New Trade
-            </h3>
-            <p className="text-sm text-gray-600 dark:text-gray-400">
-              Record a new trade in your journal
-            </p>
-          </CardContent>
-        </Card>
+        <AddTradeModal 
+          trigger={
+            <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+              <CardContent className="p-6 text-center">
+                <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/20 rounded-lg flex items-center justify-center mx-auto mb-4">
+                  <Plus className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+                </div>
+                <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
+                  Add New Trade
+                </h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  Record a new trade in your journal
+                </p>
+              </CardContent>
+            </Card>
+          }
+        />
 
         <Card className="hover:shadow-lg transition-shadow cursor-pointer">
           <CardContent className="p-6 text-center">

@@ -1,5 +1,7 @@
 import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
+import { type EnhancedTradeFormData } from '@/lib/validations'
+import { EnhancedTradeAPI, type EnhancedTrade as APIEnhancedTrade } from '@/lib/api/enhanced-trades'
 
 interface Trade {
   id: string
@@ -13,6 +15,9 @@ interface Trade {
   strategy?: string
   notes?: string
 }
+
+// Enhanced trade interface for comprehensive trade logging
+type EnhancedTrade = APIEnhancedTrade
 
 interface Portfolio {
   id: string
@@ -36,6 +41,7 @@ interface Position {
 
 interface TradingState {
   trades: Trade[]
+  enhancedTrades: EnhancedTrade[]
   portfolios: Portfolio[]
   positions: Position[]
   selectedPortfolio: Portfolio | null
@@ -46,11 +52,22 @@ interface TradingState {
 interface TradingActions {
   setTrades: (trades: Trade[]) => void
   addTrade: (trade: Trade) => void
-  updateTrade: (id: string, trade: Partial<Trade>) => void
+  updateTrade: (id: string, updatedTrade: Partial<Trade>) => void
   deleteTrade: (id: string) => void
+  setEnhancedTrades: (enhancedTrades: EnhancedTrade[]) => void
+  loadEnhancedTrades: (userId: string) => Promise<void>
+  addEnhancedTrade: (userId: string, tradeData: EnhancedTradeFormData) => Promise<void>
+  updateEnhancedTrade: (id: string, updatedTrade: Partial<EnhancedTradeFormData>) => Promise<void>
+  deleteEnhancedTrade: (id: string) => Promise<void>
   setPortfolios: (portfolios: Portfolio[]) => void
+  addPortfolio: (portfolio: Portfolio) => void
+  updatePortfolio: (id: string, updatedPortfolio: Partial<Portfolio>) => void
+  deletePortfolio: (id: string) => void
   setSelectedPortfolio: (portfolio: Portfolio | null) => void
   setPositions: (positions: Position[]) => void
+  addPosition: (position: Position) => void
+  updatePosition: (id: string, updatedPosition: Partial<Position>) => void
+  deletePosition: (id: string) => void
   setLoading: (loading: boolean) => void
   setError: (error: string | null) => void
   resetState: () => void
@@ -60,6 +77,7 @@ type TradingStore = TradingState & TradingActions
 
 const initialState: TradingState = {
   trades: [],
+  enhancedTrades: [],
   portfolios: [],
   positions: [],
   selectedPortfolio: null,
@@ -69,7 +87,7 @@ const initialState: TradingState = {
 
 export const useTradingStore = create<TradingStore>()(
   devtools(
-    (set, get) => ({
+    (set) => ({
       ...initialState,
       
       setTrades: (trades) => set({ trades }),
@@ -88,12 +106,95 @@ export const useTradingStore = create<TradingStore>()(
         set((state) => ({
           trades: state.trades.filter((trade) => trade.id !== id),
         })),
+
+      setEnhancedTrades: (enhancedTrades) => set({ enhancedTrades }),
+      
+      loadEnhancedTrades: async (userId) => {
+        try {
+          set({ isLoading: true, error: null })
+          const trades = await EnhancedTradeAPI.getTrades(userId)
+          set({ enhancedTrades: trades, isLoading: false })
+        } catch (error) {
+          set({ error: error instanceof Error ? error.message : 'Failed to load trades', isLoading: false })
+        }
+      },
+      
+      addEnhancedTrade: async (userId, tradeData) => {
+        try {
+          set({ isLoading: true, error: null })
+          const newTrade = await EnhancedTradeAPI.createTrade({ userId, ...tradeData })
+          set((state) => ({ 
+            enhancedTrades: [...state.enhancedTrades, newTrade],
+            isLoading: false
+          }))
+        } catch (error) {
+          set({ error: error instanceof Error ? error.message : 'Failed to create trade', isLoading: false })
+        }
+      },
+      
+      updateEnhancedTrade: async (id, updatedTrade) => {
+        try {
+          set({ isLoading: true, error: null })
+          const updated = await EnhancedTradeAPI.updateTrade(id, updatedTrade)
+          set((state) => ({
+            enhancedTrades: state.enhancedTrades.map((trade) =>
+              trade.id === id ? updated : trade
+            ),
+            isLoading: false
+          }))
+        } catch (error) {
+          set({ error: error instanceof Error ? error.message : 'Failed to update trade', isLoading: false })
+        }
+      },
+      
+      deleteEnhancedTrade: async (id) => {
+        try {
+          set({ isLoading: true, error: null })
+          await EnhancedTradeAPI.deleteTrade(id)
+          set((state) => ({
+            enhancedTrades: state.enhancedTrades.filter((trade) => trade.id !== id),
+            isLoading: false
+          }))
+        } catch (error) {
+          set({ error: error instanceof Error ? error.message : 'Failed to delete trade', isLoading: false })
+        }
+      },
       
       setPortfolios: (portfolios) => set({ portfolios }),
+      
+      addPortfolio: (portfolio) =>
+        set((state) => ({ portfolios: [...state.portfolios, portfolio] })),
+      
+      updatePortfolio: (id, updatedPortfolio) =>
+        set((state) => ({
+          portfolios: state.portfolios.map((portfolio) =>
+            portfolio.id === id ? { ...portfolio, ...updatedPortfolio } : portfolio
+          ),
+        })),
+      
+      deletePortfolio: (id) =>
+        set((state) => ({
+          portfolios: state.portfolios.filter((portfolio) => portfolio.id !== id),
+        })),
       
       setSelectedPortfolio: (portfolio) => set({ selectedPortfolio: portfolio }),
       
       setPositions: (positions) => set({ positions }),
+      
+      addPosition: (position) =>
+        set((state) => ({ positions: [...state.positions, position] })),
+      
+      updatePosition: (id, updatedPosition) =>
+        set((state) => ({
+          positions: state.positions.map((position) =>
+            position.id === id ? { ...position, ...updatedPosition } : position
+          ),
+        })),
+      
+      deletePosition: (id) =>
+        set((state) => ({
+          positions: state.positions.filter((position) => position.id !== id),
+        })),
       
       setLoading: (loading) => set({ isLoading: loading }),
       

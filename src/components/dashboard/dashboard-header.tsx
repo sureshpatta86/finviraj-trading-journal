@@ -1,12 +1,10 @@
 'use client'
 
 import { useState } from 'react'
-import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { ThemeToggle } from '@/components/ui/theme-toggle'
 import { 
   Menu, 
-  Plus, 
   User,
   Bell,
   Search,
@@ -22,6 +20,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { AddTradeModal } from './add-trade-modal'
 
 interface User {
   name?: string | null
@@ -92,12 +91,7 @@ export function DashboardHeader({ onMenuClickAction, user }: DashboardHeaderProp
           </Button>
 
           {/* Add Trade Button */}
-          <Button size="sm" className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700" asChild>
-            <Link href="/dashboard/trades">
-              <Plus className="h-4 w-4 mr-2" />
-              <span className="hidden sm:inline">Add Trade</span>
-            </Link>
-          </Button>
+          <AddTradeModal />
 
           {/* Theme Toggle */}
           <ThemeToggle />

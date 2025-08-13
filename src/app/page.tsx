@@ -11,7 +11,7 @@ import { Badge } from '@/components/ui/badge'
 import { 
   TrendingUp, 
   BarChart3, 
-  DollarSign, 
+  IndianRupee, 
   Activity,
   Target,
   Brain,
@@ -237,7 +237,7 @@ export default function HomePage() {
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
-                    <DollarSign className="h-5 w-5" />
+                    <IndianRupee className="h-5 w-5" />
                     Account Summary
                   </CardTitle>
                 </CardHeader>
