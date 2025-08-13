@@ -15,6 +15,35 @@ export const tradeSchema = z.object({
   notes: z.string().max(1000, "Notes too long").optional(),
 })
 
+// Enhanced trade schema for the new trade log form
+export const enhancedTradeSchema = z.object({
+  symbol: z.string().min(1, "Symbol is required").max(100, "Symbol too long"),
+  entryDate: z.string().min(1, "Entry date is required"),
+  entryTime: z.string().min(1, "Entry time is required"),
+  type: z.enum(["Call", "Put"], {
+    required_error: "Type is required",
+  }),
+  entryPrice: z.number().min(0.01, "Entry price must be greater than 0"),
+  quantity: z.number().min(0.01, "Quantity must be greater than 0"),
+  stopLoss: z.number().min(0, "Stop loss cannot be negative").optional(),
+  riskPerTrade: z.number().min(0, "Risk per trade cannot be negative").optional(),
+  followSetup: z.enum(["yes", "no"], {
+    required_error: "Please specify if you followed the setup",
+  }),
+  mood: z.enum(["Neutral", "Calm", "Anxious", "Confident", "Panicked"], {
+    required_error: "Mood is required",
+  }),
+  tradeNotes: z.string().max(1000, "Trade notes too long").optional(),
+  setup: z.string().max(500, "Setup description too long").optional(),
+  mistakes: z.enum([
+    "Emotional decision", 
+    "FOMO", 
+    "Over trading", 
+    "Poor Risk to reward",
+    "None"
+  ]).optional(),
+})
+
 export const portfolioSchema = z.object({
   name: z.string().min(1, "Portfolio name is required").max(100, "Name too long"),
   description: z.string().max(500, "Description too long").optional(),
@@ -40,6 +69,7 @@ export const userLoginSchema = z.object({
 })
 
 export type TradeFormData = z.infer<typeof tradeSchema>
+export type EnhancedTradeFormData = z.infer<typeof enhancedTradeSchema>
 export type PortfolioFormData = z.infer<typeof portfolioSchema>
 export type PositionFormData = z.infer<typeof positionSchema>
 export type UserRegistrationData = z.infer<typeof userRegistrationSchema>

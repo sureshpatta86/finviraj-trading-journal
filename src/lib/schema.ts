@@ -56,6 +56,27 @@ export const trades = pgTable('trades', {
   updatedAt: timestamp('updatedAt').notNull().defaultNow(),
 })
 
+// Enhanced trades table with comprehensive trading psychology and setup tracking
+export const enhancedTrades = pgTable('enhanced_trades', {
+  id: varchar('id', { length: 128 }).primaryKey().$defaultFn(() => createId()),
+  userId: varchar('userId', { length: 128 }).notNull(),
+  symbol: varchar('symbol', { length: 100 }).notNull(), // Increased for options data
+  entryDate: varchar('entryDate', { length: 10 }).notNull(), // YYYY-MM-DD
+  entryTime: varchar('entryTime', { length: 5 }).notNull(), // HH:MM
+  type: varchar('type', { length: 10 }).notNull(), // 'Call' or 'Put'
+  entryPrice: decimal('entryPrice', { precision: 10, scale: 2 }).notNull(),
+  quantity: decimal('quantity', { precision: 10, scale: 2 }).notNull(),
+  stopLoss: decimal('stopLoss', { precision: 10, scale: 2 }),
+  riskPerTrade: decimal('riskPerTrade', { precision: 10, scale: 2 }),
+  followSetup: varchar('followSetup', { length: 3 }).notNull(), // 'yes' or 'no'
+  mood: varchar('mood', { length: 20 }).notNull(), // 'Neutral', 'Calm', 'Anxious', 'Confident', 'Panicked'
+  tradeNotes: text('tradeNotes'),
+  setup: text('setup'),
+  mistakes: varchar('mistakes', { length: 50 }), // 'Emotional decision', 'FOMO', 'Over trading', 'Poor Risk to reward', 'None'
+  createdAt: timestamp('createdAt').notNull().defaultNow(),
+  updatedAt: timestamp('updatedAt').notNull().defaultNow(),
+})
+
 export const portfolios = pgTable('portfolios', {
   id: varchar('id', { length: 128 }).primaryKey().$defaultFn(() => createId()),
   userId: varchar('userId', { length: 128 }).notNull(),
