@@ -19,6 +19,13 @@ export interface EnhancedTradeData {
 
 export interface EnhancedTrade extends EnhancedTradeData {
   id: string
+  // Trade status and exit tracking - these will be added when DB migration is applied
+  status?: 'in-progress' | 'completed' | 'cancelled'
+  exitDate?: string
+  exitTime?: string
+  exitPrice?: number
+  realizedPnl?: number
+  exitNotes?: string
   createdAt: Date
   updatedAt: Date
 }

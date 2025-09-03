@@ -1,12 +1,22 @@
 "use client"
 
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { useSession } from "next-auth/react"
+import toast from "react-hot-toast"
 import { useTradingStore } from "@/store/trading"
+import { 
+  CompletedTradeData, 
+  getCompletedTrades, 
+  saveCompletedTrade, 
+  isTradeCompleted,
+  getEffectiveTradeStatus 
+} from '@/lib/completed-trades-storage'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { AddTradeModal } from "@/components/dashboard/add-trade-modal"
+import { EditTradeModal } from "@/components/dashboard/edit-trade-modal"
+import { ExitTradeModal } from "@/components/dashboard/exit-trade-modal"
 import { 
   CalendarDays, 
   Clock, 
@@ -15,13 +25,27 @@ import {
   Brain, 
   AlertTriangle,
   Plus,
-  Filter
+  Filter,
+  Edit2,
+  LogOut,
+  CheckCircle,
+  Trash2
 } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { type EnhancedTrade } from "@/lib/api/enhanced-trades"
 
 export default function TradeLogPage() {
   const { data: session } = useSession()
   const { enhancedTrades, loadEnhancedTrades, isLoading } = useTradingStore()
+  
+  // State to track completed trades - initialized from localStorage
+  const [completedTrades, setCompletedTrades] = useState<Map<string, CompletedTradeData>>(new Map())
+
+  // Load completed trades from localStorage on mount
+  useEffect(() => {
+    const storedCompletedTrades = getCompletedTrades()
+    setCompletedTrades(storedCompletedTrades)
+  }, [])
 
   // Load trades when component mounts and user is authenticated
   useEffect(() => {
@@ -30,6 +54,101 @@ export default function TradeLogPage() {
       loadEnhancedTrades(session.user.id)
     }
   }, [session, loadEnhancedTrades])
+
+  const handleTradeUpdated = () => {
+    // Handle trade update - refresh data
+    if (session?.user?.id) {
+      loadEnhancedTrades(session.user.id)
+    }
+  }
+
+  const handleTradeAdded = () => {
+    // Handle new trade added - refresh data
+    if (session?.user?.id) {
+      loadEnhancedTrades(session.user.id)
+    }
+  }
+
+  const handleTradeExited = (exitedTrade: EnhancedTrade) => {
+    // Save completed trade to localStorage
+    const completedTradeData: CompletedTradeData = {
+      id: exitedTrade.id,
+      status: 'completed',
+      exitDate: exitedTrade.exitDate || '',
+      exitTime: exitedTrade.exitTime || '',
+      exitPrice: exitedTrade.exitPrice || 0,
+      realizedPnl: exitedTrade.realizedPnl || 0,
+      exitNotes: exitedTrade.exitNotes || '',
+      completedAt: new Date().toISOString(),
+    }
+    
+    saveCompletedTrade(completedTradeData)
+    
+    // Update local state
+    setCompletedTrades(prev => new Map(prev).set(exitedTrade.id, completedTradeData))
+    
+    // Also refresh data from server
+    if (session?.user?.id) {
+      loadEnhancedTrades(session.user.id)
+    }
+  }
+
+  const handleTradeDeleted = async (tradeId: string) => {
+    if (!session?.user?.id) {
+      toast.error("Please sign in to delete trade")
+      return
+    }
+
+    // Confirm deletion
+    if (!window.confirm("Are you sure you want to delete this trade? This action cannot be undone.")) {
+      return
+    }
+
+    try {
+      const response = await fetch(`/api/trades/enhanced/${tradeId}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to delete trade')
+      }
+
+      toast.success("Trade deleted successfully!")
+      
+      // Refresh trades list
+      if (session?.user?.id) {
+        loadEnhancedTrades(session.user.id)
+      }
+    } catch (error) {
+      console.error('Error deleting trade:', error)
+      toast.error("Failed to delete trade. Please try again.")
+    }
+  }
+
+  // Helper function to get effective status using localStorage
+  const getEffectiveStatus = (trade: EnhancedTrade): string => {
+    return getEffectiveTradeStatus(trade.id, trade.status)
+  }
+
+  // Helper function to get the effective trade data (with exit info if completed)
+  const getEffectiveTrade = (trade: EnhancedTrade): EnhancedTrade => {
+    const completedTrade = completedTrades.get(trade.id)
+    if (completedTrade && isTradeCompleted(trade.id)) {
+      return {
+        ...trade,
+        status: 'completed',
+        exitDate: completedTrade.exitDate,
+        exitTime: completedTrade.exitTime,
+        exitPrice: completedTrade.exitPrice,
+        realizedPnl: completedTrade.realizedPnl,
+        exitNotes: completedTrade.exitNotes,
+      } as EnhancedTrade
+    }
+    return trade
+  }
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString()
@@ -62,6 +181,30 @@ export default function TradeLogPage() {
       : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300'
   }
 
+  const getStatusIcon = (status?: string) => {
+    switch (status) {
+      case 'completed':
+        return <CheckCircle className="w-4 h-4 text-green-600" />
+      case 'in-progress':
+        return <Clock className="w-4 h-4 text-blue-600" />
+      default:
+        return <Clock className="w-4 h-4 text-blue-600" /> // Default to in-progress for backward compatibility
+    }
+  }
+
+  const getStatusBadge = (status?: string) => {
+    switch (status) {
+      case 'completed':
+        return <Badge variant="secondary" className="bg-green-100 text-green-800">Completed</Badge>
+      case 'in-progress':
+        return <Badge variant="secondary" className="bg-blue-100 text-blue-800">In Progress</Badge>
+      case 'cancelled':
+        return <Badge variant="destructive">Cancelled</Badge>
+      default:
+        return <Badge variant="secondary" className="bg-blue-100 text-blue-800">In Progress</Badge> // Default to in-progress
+    }
+  }
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -79,7 +222,7 @@ export default function TradeLogPage() {
             <Filter className="h-4 w-4" />
             Filter
           </Button>
-          <AddTradeModal />
+          <AddTradeModal onTradeAdded={handleTradeAdded} />
         </div>
       </div>
 
@@ -155,30 +298,38 @@ export default function TradeLogPage() {
             <p className="text-gray-600 dark:text-gray-400 mb-6">
               Start logging your trades to track your performance and improve your trading strategy.
             </p>
-            <AddTradeModal />
+            <AddTradeModal onTradeAdded={handleTradeAdded} />
           </CardContent>
         </Card>
       ) : (
         <div className="space-y-4">
-          {enhancedTrades.map((trade) => (
+          {enhancedTrades.map((trade) => {
+            const effectiveTrade = getEffectiveTrade(trade)
+            const effectiveStatus = getEffectiveStatus(trade)
+            
+            return (
             <Card key={trade.id} className="hover:shadow-lg transition-shadow">
               <CardContent className="p-6">
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
                   {/* Trade Basic Info */}
                   <div className="lg:col-span-3 space-y-2">
                     <div className="flex items-center gap-2">
-                      <h3 className="font-bold text-lg">{trade.symbol}</h3>
-                      <Badge className={cn("text-xs", getTypeColor(trade.type))}>
-                        {trade.type}
+                      <h3 className="font-bold text-lg">{effectiveTrade.symbol}</h3>
+                      <Badge className={cn("text-xs", getTypeColor(effectiveTrade.type))}>
+                        {effectiveTrade.type}
                       </Badge>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      {getStatusIcon(effectiveStatus)}
+                      {getStatusBadge(effectiveStatus)}
                     </div>
                     <div className="flex items-center gap-1 text-sm text-gray-600 dark:text-gray-400">
                       <CalendarDays className="h-4 w-4" />
-                      {formatDate(trade.entryDate)}
+                      {formatDate(effectiveTrade.entryDate)}
                     </div>
                     <div className="flex items-center gap-1 text-sm text-gray-600 dark:text-gray-400">
                       <Clock className="h-4 w-4" />
-                      {formatTime(trade.entryTime)}
+                      {formatTime(effectiveTrade.entryTime)}
                     </div>
                   </div>
 
@@ -186,14 +337,26 @@ export default function TradeLogPage() {
                   <div className="lg:col-span-3 space-y-2">
                     <div className="flex items-center gap-1 text-sm">
                       <IndianRupee className="h-4 w-4" />
-                      <span className="font-semibold">₹{trade.entryPrice}</span>
+                      <span className="font-semibold">₹{effectiveTrade.entryPrice}</span>
                     </div>
                     <div className="text-sm text-gray-600 dark:text-gray-400">
-                      Qty: {trade.quantity}
+                      Qty: {effectiveTrade.quantity}
                     </div>
-                    {trade.stopLoss && (
+                    {effectiveTrade.stopLoss && (
                       <div className="text-sm text-gray-600 dark:text-gray-400">
-                        SL: ₹{trade.stopLoss}
+                        SL: ₹{effectiveTrade.stopLoss}
+                      </div>
+                    )}
+                    {effectiveStatus === 'completed' && effectiveTrade.exitPrice && (
+                      <div className="text-sm font-semibold text-green-600">
+                        Exit: ₹{effectiveTrade.exitPrice}
+                      </div>
+                    )}
+                    {effectiveStatus === 'completed' && effectiveTrade.realizedPnl && (
+                      <div className={cn("text-sm font-semibold", 
+                        parseFloat(effectiveTrade.realizedPnl.toString()) >= 0 ? "text-green-600" : "text-red-600"
+                      )}>
+                        P&L: {parseFloat(effectiveTrade.realizedPnl.toString()) >= 0 ? '+' : ''}₹{effectiveTrade.realizedPnl}
                       </div>
                     )}
                   </div>
@@ -202,8 +365,8 @@ export default function TradeLogPage() {
                   <div className="lg:col-span-3 space-y-2">
                     <div className="flex items-center gap-2">
                       <Brain className="h-4 w-4" />
-                      <Badge className={cn("text-xs", getMoodColor(trade.mood))}>
-                        {trade.mood}
+                      <Badge className={cn("text-xs", getMoodColor(effectiveTrade.mood))}>
+                        {effectiveTrade.mood}
                       </Badge>
                     </div>
                     <div className="flex items-center gap-2">
@@ -226,7 +389,7 @@ export default function TradeLogPage() {
                     )}
                   </div>
 
-                  {/* Notes */}
+                  {/* Notes and Actions */}
                   <div className="lg:col-span-3 space-y-2">
                     {trade.setup && (
                       <div>
@@ -244,11 +407,70 @@ export default function TradeLogPage() {
                         </p>
                       </div>
                     )}
+                    {trade.exitNotes && (
+                      <div>
+                        <h4 className="text-sm font-semibold">Exit Notes:</h4>
+                        <p className="text-sm text-gray-600 dark:text-gray-400 truncate">
+                          {trade.exitNotes}
+                        </p>
+                      </div>
+                    )}
+                    
+                    {/* Action buttons for in-progress trades */}
+                    {effectiveStatus === 'in-progress' && (
+                      <div className="flex gap-2 pt-2">
+                        <EditTradeModal 
+                          trade={effectiveTrade}
+                          onTradeUpdated={handleTradeUpdated}
+                          trigger={
+                            <Button variant="outline" size="sm">
+                              <Edit2 className="w-4 h-4 mr-1" />
+                              Edit
+                            </Button>
+                          }
+                        />
+                        <ExitTradeModal 
+                          trade={effectiveTrade}
+                          onTradeExited={handleTradeExited}
+                          trigger={
+                            <Button variant="outline" size="sm" className="text-red-600 hover:text-red-700 hover:bg-red-50">
+                              <LogOut className="w-4 h-4 mr-1" />
+                              Exit
+                            </Button>
+                          }
+                        />
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                          onClick={() => handleTradeDeleted(effectiveTrade.id)}
+                        >
+                          <Trash2 className="w-4 h-4 mr-1" />
+                          Delete
+                        </Button>
+                      </div>
+                    )}
+                    
+                    {/* Delete button for completed trades */}
+                    {effectiveStatus === 'completed' && (
+                      <div className="flex gap-2 pt-2">
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                          onClick={() => handleTradeDeleted(effectiveTrade.id)}
+                        >
+                          <Trash2 className="w-4 h-4 mr-1" />
+                          Delete
+                        </Button>
+                      </div>
+                    )}
                   </div>
                 </div>
               </CardContent>
             </Card>
-          ))}
+            )
+          })}
         </div>
       )}
     </div>
