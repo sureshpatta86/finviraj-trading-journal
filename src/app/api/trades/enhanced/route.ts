@@ -19,11 +19,71 @@ export async function GET(request: NextRequest) {
     }
 
     const trades = await db
-      .select()
+      .select({
+        id: enhancedTrades.id,
+        userId: enhancedTrades.userId,
+        symbol: enhancedTrades.symbol,
+        entryDate: enhancedTrades.entryDate,
+        entryTime: enhancedTrades.entryTime,
+        type: enhancedTrades.type,
+        entryPrice: enhancedTrades.entryPrice,
+        quantity: enhancedTrades.quantity,
+        stopLoss: enhancedTrades.stopLoss,
+        riskPerTrade: enhancedTrades.riskPerTrade,
+        followSetup: enhancedTrades.followSetup,
+        mood: enhancedTrades.mood,
+        tradeNotes: enhancedTrades.tradeNotes,
+        setup: enhancedTrades.setup,
+        mistakes: enhancedTrades.mistakes,
+        createdAt: enhancedTrades.createdAt,
+        updatedAt: enhancedTrades.updatedAt,
+      })
       .from(enhancedTrades)
       .where(eq(enhancedTrades.userId, userId))
 
-    return NextResponse.json({ trades })
+    // Helper function to extract exit data from trade notes
+    const extractExitData = (tradeNotes: string | null) => {
+      if (!tradeNotes) return null
+      
+      const exitDataMatch = tradeNotes.match(/\[EXIT_DATA:(.+?)\]/s)
+      if (exitDataMatch) {
+        try {
+          return JSON.parse(exitDataMatch[1])
+        } catch (error) {
+          console.error('Error parsing exit data:', error)
+          return null
+        }
+      }
+      return null
+    }
+
+    // Add default status for all trades and check for exit data in notes
+    const tradesWithStatus = trades.map(trade => {
+      const exitData = extractExitData(trade.tradeNotes)
+      
+      if (exitData && exitData.isExited) {
+        // Trade has exit data stored in notes
+        return {
+          ...trade,
+          status: 'completed' as const,
+          exitDate: exitData.exitDate,
+          exitTime: exitData.exitTime,
+          exitPrice: exitData.exitPrice,
+          realizedPnl: exitData.realizedPnl,
+          exitNotes: exitData.exitNotes,
+          // Clean up trade notes by removing exit data
+          tradeNotes: trade.tradeNotes?.replace(/\n\n\[EXIT_DATA:.+?\]/s, '') || null
+        }
+      } else {
+        // Trade is still in progress
+        return {
+          ...trade,
+          status: 'in-progress' as const
+        }
+      }
+    })
+
+    return NextResponse.json({ trades: tradesWithStatus })
   } catch (error) {
     console.error('Error fetching enhanced trades:', error)
     return NextResponse.json(
@@ -63,10 +123,34 @@ export async function POST(request: NextRequest) {
     const [newTrade] = await db
       .insert(enhancedTrades)
       .values(newTradeData)
-      .returning()
+      .returning({
+        id: enhancedTrades.id,
+        userId: enhancedTrades.userId,
+        symbol: enhancedTrades.symbol,
+        entryDate: enhancedTrades.entryDate,
+        entryTime: enhancedTrades.entryTime,
+        type: enhancedTrades.type,
+        entryPrice: enhancedTrades.entryPrice,
+        quantity: enhancedTrades.quantity,
+        stopLoss: enhancedTrades.stopLoss,
+        riskPerTrade: enhancedTrades.riskPerTrade,
+        followSetup: enhancedTrades.followSetup,
+        mood: enhancedTrades.mood,
+        tradeNotes: enhancedTrades.tradeNotes,
+        setup: enhancedTrades.setup,
+        mistakes: enhancedTrades.mistakes,
+        createdAt: enhancedTrades.createdAt,
+        updatedAt: enhancedTrades.updatedAt,
+      })
+
+    // Add default status to response since it's not in DB yet
+    const tradeWithStatus = {
+      ...newTrade,
+      status: 'in-progress' as const
+    }
 
     return NextResponse.json(
-      { trade: newTrade, message: 'Trade created successfully' },
+      { trade: tradeWithStatus, message: 'Trade created successfully' },
       { status: 201 }
     )
   } catch (error) {

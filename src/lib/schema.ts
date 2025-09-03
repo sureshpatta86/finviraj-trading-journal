@@ -73,6 +73,15 @@ export const enhancedTrades = pgTable('enhanced_trades', {
   tradeNotes: text('tradeNotes'),
   setup: text('setup'),
   mistakes: varchar('mistakes', { length: 50 }), // 'Emotional decision', 'FOMO', 'Over trading', 'Poor Risk to reward', 'None'
+  
+  // Trade status and exit tracking
+  status: varchar('status', { length: 20 }).notNull().default('in-progress'), // 'in-progress', 'completed', 'cancelled'
+  exitDate: varchar('exitDate', { length: 10 }), // YYYY-MM-DD
+  exitTime: varchar('exitTime', { length: 5 }), // HH:MM
+  exitPrice: decimal('exitPrice', { precision: 10, scale: 2 }),
+  realizedPnl: decimal('realizedPnl', { precision: 10, scale: 2 }),
+  exitNotes: text('exitNotes'),
+  
   createdAt: timestamp('createdAt').notNull().defaultNow(),
   updatedAt: timestamp('updatedAt').notNull().defaultNow(),
 })

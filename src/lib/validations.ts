@@ -44,6 +44,21 @@ export const enhancedTradeSchema = z.object({
   ]).optional(),
 })
 
+// Exit trade schema for completing a trade
+export const exitTradeSchema = z.object({
+  exitDate: z.string().min(1, "Exit date is required"),
+  exitTime: z.string().min(1, "Exit time is required"),
+  exitPrice: z.number().min(0.01, "Exit price must be greater than 0"),
+  exitNotes: z.string().max(1000, "Exit notes too long").optional(),
+})
+
+// Update trade schema for editing existing trades
+export const updateTradeSchema = enhancedTradeSchema.partial().omit({
+  // Prevent changing these core fields when editing
+}).extend({
+  id: z.string().min(1, "Trade ID is required"),
+})
+
 export const portfolioSchema = z.object({
   name: z.string().min(1, "Portfolio name is required").max(100, "Name too long"),
   description: z.string().max(500, "Description too long").optional(),
@@ -60,7 +75,6 @@ export const positionSchema = z.object({
 export const userRegistrationSchema = z.object({
   email: z.string().email("Invalid email address"),
   password: z.string().min(8, "Password must be at least 8 characters"),
-  name: z.string().min(1, "Name is required").max(255, "Name too long"),
 })
 
 export const userLoginSchema = z.object({
@@ -70,6 +84,8 @@ export const userLoginSchema = z.object({
 
 export type TradeFormData = z.infer<typeof tradeSchema>
 export type EnhancedTradeFormData = z.infer<typeof enhancedTradeSchema>
+export type ExitTradeFormData = z.infer<typeof exitTradeSchema>
+export type UpdateTradeFormData = z.infer<typeof updateTradeSchema>
 export type PortfolioFormData = z.infer<typeof portfolioSchema>
 export type PositionFormData = z.infer<typeof positionSchema>
 export type UserRegistrationData = z.infer<typeof userRegistrationSchema>
